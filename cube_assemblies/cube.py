@@ -1,11 +1,14 @@
 from dataclasses import dataclass
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, order=True)
 class Cube:
     x: int
     y: int
     z: int
+
+    def __str__(self):
+        return f'({self.x},{self.y},{self.z})'
 
     def rotate(self, axis: str) -> 'Cube':
         """Returns a new cube rotated 90 degrees counterclockwise about axis in right hand coordinate system"""
@@ -20,3 +23,13 @@ class Cube:
     def translate(self, x: int, y: int, z: int) -> 'Cube':
         """Returns a new cube translated by x,y,z amounts"""
         return Cube(self.x + x, self.y + y, self.z + z)
+
+    def get_neighbors(self) -> tuple['Cube']:
+        neighbors = []
+        neighbors.append(Cube(self.x + 1, self.y, self.z))
+        neighbors.append(Cube(self.x - 1, self.y, self.z))
+        neighbors.append(Cube(self.x, self.y + 1, self.z))
+        neighbors.append(Cube(self.x, self.y - 1, self.z))
+        neighbors.append(Cube(self.x, self.y, self.z + 1))
+        neighbors.append(Cube(self.x, self.y, self.z - 1))
+        return tuple(neighbors)

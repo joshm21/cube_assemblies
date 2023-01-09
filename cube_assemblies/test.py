@@ -1,5 +1,6 @@
 import unittest
 from cube import Cube
+from orientation import Orientation
 from piece import Piece
 
 
@@ -45,43 +46,99 @@ class TestCube(unittest.TestCase):
         self.assertTrue(Cube(-7, -8, 9).rotate('z') == Cube(8, -7, 9))
         self.assertTrue(Cube(-8, -9, -10).rotate('z') == Cube(9, -8, -10))
 
+    def test_get_neighbors(self):
+        neighbors = Cube(1, 1, 1).get_neighbors()
+        self.assertIn(Cube(2, 1, 1), neighbors)
+        self.assertIn(Cube(0, 1, 1), neighbors)
+        self.assertIn(Cube(1, 2, 1), neighbors)
+        self.assertIn(Cube(1, 0, 1), neighbors)
+        self.assertIn(Cube(1, 1, 2), neighbors)
+        self.assertIn(Cube(1, 1, 0), neighbors)
 
-class TestPiece(unittest.TestCase):
 
-    def test_from_xyz_tuples(self):
-        self.assertEqual(Piece(frozenset([Cube(1, 2, 3), Cube(4, 5, 6)])),
-                         Piece.from_xyz([(1, 2, 3), (4, 5, 6)]))
+class TestOrientation(unittest.TestCase):
+
+    def test_str(self):
+        self.assertEqual(
+            Orientation.from_xyz(((1, 2, 3), (4, 5, 6))).__str__(),
+            '((1,2,3),(4,5,6))')
+
+    def test_equality(self):
+        self.assertEqual(
+            Orientation.from_xyz(((1, 2, 3), (4, 5, 6))),
+            Orientation.from_xyz(((1, 2, 3), (4, 5, 6))))
+        self.assertNotEqual(
+            Orientation.from_xyz(((1, 2, 3), (4, 5, 6))),
+            Orientation.from_xyz(((9, 9, 9), (9, 9, 9))))
+
+    def test_init_sorting(self):
+        self.assertEqual(
+            Orientation.from_xyz(((1, 2, 3), (4, 5, 6))),
+            Orientation.from_xyz(((4, 5, 6), (1, 2, 3))))
+
+    def test_from_xyz(self):
+        self.assertEqual(
+            Orientation((Cube(1, 2, 3), Cube(4, 5, 6))),
+            Orientation.from_xyz(((1, 2, 3), (4, 5, 6))))
 
     def test_immutable_cubes_attribute(self):
         with self.assertRaises(Exception):
-            test_piece = Piece.from_xyz([(1, 2, 3), (4, 5, 6)])
-            test_piece.cubes = 1
+            test_orientation = Orientation.from_xyz(((1, 2, 3), (4, 5, 6)))
+            test_orientation.cubes = 1
 
     def test_immutable_individual_cubes(self):
         with self.assertRaises(Exception):
-            test_piece = Piece.from_xyz([(1, 2, 3), (4, 5, 6)])
-            test_piece.cubes[0] = Cube(1, 2, 3)
-
-    def test_equality(self):
-        self.assertTrue(
-            Piece.from_xyz([(1, 2, 3), (4, 5, 6)]),
-            Piece.from_xyz([(1, 2, 3), (4, 5, 6)]))
+            test_orientation = Orientation.from_xyz(((1, 2, 3), (4, 5, 6)))
+            test_orientation.cubes[0] = Cube(1, 2, 3)
 
     def test_rotate(self):
-        self.assertTrue(
-            Piece.from_xyz([(1, 2, 3), (2, 3, -4)]),
-            Piece.from_xyz([(1, -3, 2), (2, 3, 4)]))
+        self.assertEqual(
+            Orientation.from_xyz(((1, 2, 3), (2, 3, -4))).rotate('x'),
+            Orientation.from_xyz(((1, -3, 2), (2, 4, 3))))
 
     def test_translate_to_origin(self):
-        self.assertTrue(
-            Piece.from_xyz([(-1, -2, -3), (4, 5, 6)]),
-            Piece.from_xyz([(0, 0, 0), (5, 7, 9)]))
-        self.assertTrue(
-            Piece.from_xyz([(1, 2, 3), (4, 5, 6)]),
-            Piece.from_xyz([(0, 0, 0), (3, 3, 3)]))
+        self.assertEqual(
+            Orientation.from_xyz(((-1, -2, -3), (4, 5, 6))
+                                 ).translate_to_origin(),
+            Orientation.from_xyz(((0, 0, 0), (5, 7, 9))))
+        self.assertEqual(
+            Orientation.from_xyz(((1, 2, 3), (4, 5, 6))).translate_to_origin(),
+            Orientation.from_xyz(((0, 0, 0), (3, 3, 3))))
 
-    def test_get_24_positive_orientations(self):
-        orientations = Piece.from_xyz(
-            [(1, 2, 3)]).get_24_positive_orientations()
-        self.assertIn(Piece.from_xyz([(1, 2, 3)]), orientations)
-        # TODO fill this out
+    def test_has_cube(self):
+        self.assertTrue(Orientation.from_xyz(((1, 2, 3), (4, 5, 6))
+                                             ).has_cube(Cube(1, 2, 3)))
+        self.assertFalse(Orientation.from_xyz(((1, 2, 3), (4, 5, 6))
+                                              ).has_cube(Cube(9, 9, 9)))
+
+
+class TestPiece(unittest.TestCase):
+
+    def test_from_xyz(self):
+        self.assertEqual(
+            Piece(Orientation((Cube(1, 2, 3), Cube(4, 5, 6)))),
+            Piece.from_xyz(((1, 2, 3), (4, 5, 6))))
+
+    def test_get_unique_orientations(self):
+        self.assertEqual(
+            Piece.from_xyz(((0, 0, 0), (0, 0, 1))).orientations,
+            frozenset((
+                Orientation.from_xyz(((0, 0, 0), (0, 0, 1))),
+                Orientation.from_xyz(((0, 0, 0), (0, 1, 0))),
+                Orientation.from_xyz(((0, 0, 0), (1, 0, 0)))
+            ))
+        )
+
+    def test_equality(self):
+        self.assertEqual(
+            Piece.from_xyz(((0, 0, 0), (0, 0, 1))),
+            Piece.from_xyz(((0, 0, 0), (1, 0, 0)))
+        )
+        self.assertNotEqual(
+            Piece.from_xyz(((0, 0, 0), (0, 0, 1))),
+            Piece.from_xyz(((0, 0, 0), (0, 0, 2)))
+        )
+
+
+if __name__ == '__main__':
+    unittest.main()

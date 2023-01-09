@@ -1,32 +1,34 @@
-from cube_assemblies.cube import Cube
+from generate_pieces import generate_pieces, Node
+from cube import Cube
+from piece import Piece
 
 
-# Node
-#
+def get_child_nodes(node):
+    x = node.last_cube.x
+    y = node.last_cube.y
+    last_cubes = []
+    last_cubes.append(Cube(x+1, y, 0))
+    last_cubes.append(Cube(x, y+1, 0))
+    if x > 0:
+        last_cubes.append(Cube(x-1, y, 0))
+    if y > 0:
+        last_cubes.append(Cube(x, y-1, 0))
 
-# initial_node, func_find_children, func_validate_child
-
-class Node:
-
-    def __init__(self) -> None:
-        pass
+    new_depth = node.depth + 1
+    previous_cubes = tuple(node.piece.cubes)
+    child_nodes = []
+    for last_cube in last_cubes:
+        new_piece = Piece(frozenset([*previous_cubes, last_cube]))
+        child_nodes.append(Node(new_depth, new_piece, last_cube))
+    # check last_cube not where another already exists
+    return tuple(child_nodes)
 
 
 def main():
-    """
-    Start with cube at 0,0,0
-    Find adjacent cubes with x,y,z >= 0
-    For each adjacent cube
-        Create new piece including previous cubes and newly found adjacent cube
-        Check if new piece is unique by checking seen orientations; if new
-            dd piece orientations to seen orientations
-            add piece to piece list
-    """
-    pass
-
-
-def find_adjacent_positive_cubes(cube):
-    pass
+    # https://en.wikipedia.org/wiki/Polyomino
+    for piece in generate_pieces(1, get_child_nodes):
+        # print(piece)
+        pass
 
 
 if __name__ == '__main__':
