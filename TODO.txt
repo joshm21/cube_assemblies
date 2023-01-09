@@ -1,0 +1,24 @@
+orientation.py
+- check for duplicates on init
+- add cube
+- get children
+- property: max x,y,z 
+- property is planar?
+
+generate_pieces.py
+- standardize return format
+- maybe tuple where each index represents pieces with x number of cubes
+
+polyomino/generate.py
+- add tests to compare with wiki table
+
+fit.py
+- define bounding box that pieces should fit in
+- return bool?
+- or pieces fit shape exactly, partially, or totally and some outside bounding shape?
+
+disasseble.py
+- return bool if pieces can be disassembled using only xyz translations
+
+assembly.py
+- store orientation and offset from global coordinate origin
