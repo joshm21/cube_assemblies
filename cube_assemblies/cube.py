@@ -24,12 +24,18 @@ class Cube:
         """Returns a new cube translated by x,y,z amounts"""
         return Cube(self.x + x, self.y + y, self.z + z)
 
-    def get_neighbors(self) -> tuple['Cube']:
+    def get_neighbors(self, x_max: int, y_max: int, z_max: int) -> tuple['Cube']:
         neighbors = []
-        neighbors.append(Cube(self.x + 1, self.y, self.z))
-        neighbors.append(Cube(self.x - 1, self.y, self.z))
-        neighbors.append(Cube(self.x, self.y + 1, self.z))
-        neighbors.append(Cube(self.x, self.y - 1, self.z))
-        neighbors.append(Cube(self.x, self.y, self.z + 1))
-        neighbors.append(Cube(self.x, self.y, self.z - 1))
+        if self.x < x_max:
+            neighbors.append(Cube(self.x + 1, self.y, self.z))
+        if self.x > 0:
+            neighbors.append(Cube(self.x - 1, self.y, self.z))
+        if self.y < y_max:
+            neighbors.append(Cube(self.x, self.y + 1, self.z))
+        if self.y > 0:
+            neighbors.append(Cube(self.x, self.y - 1, self.z))
+        if self.z < z_max:
+            neighbors.append(Cube(self.x, self.y, self.z + 1))
+        if self.z > 0:
+            neighbors.append(Cube(self.x, self.y, self.z - 1))
         return tuple(neighbors)

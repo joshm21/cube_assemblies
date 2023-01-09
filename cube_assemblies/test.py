@@ -47,13 +47,13 @@ class TestCube(unittest.TestCase):
         self.assertTrue(Cube(-8, -9, -10).rotate('z') == Cube(9, -8, -10))
 
     def test_get_neighbors(self):
-        neighbors = Cube(1, 1, 1).get_neighbors()
-        self.assertIn(Cube(2, 1, 1), neighbors)
-        self.assertIn(Cube(0, 1, 1), neighbors)
-        self.assertIn(Cube(1, 2, 1), neighbors)
-        self.assertIn(Cube(1, 0, 1), neighbors)
-        self.assertIn(Cube(1, 1, 2), neighbors)
-        self.assertIn(Cube(1, 1, 0), neighbors)
+        neighbors = Cube(1, 1, 0).get_neighbors(x_max=2, y_max=2, z_max=0)
+        self.assertIn(Cube(2, 1, 0), neighbors)
+        self.assertIn(Cube(0, 1, 0), neighbors)
+        self.assertIn(Cube(1, 2, 0), neighbors)
+        self.assertIn(Cube(1, 0, 0), neighbors)
+        self.assertNotIn(Cube(1, 1, 1), neighbors)
+        self.assertNotIn(Cube(1, 1, -1), neighbors)
 
 
 class TestOrientation(unittest.TestCase):
@@ -120,7 +120,17 @@ class TestOrientation(unittest.TestCase):
     def test_add_cube(self):
         self.assertEqual(
             Orientation.from_xyz(((1, 2, 3), (4, 5, 6))),
-            Orientation.from_xyz(((1, 2, 3),)).add_cube(Cube(4, 5, 6))
+            Orientation.from_xyz(((1, 2, 3),)).add_cube(Cube(4, 5, 6)))
+
+    def test_get_children(self):
+        self.assertEqual(
+            Orientation.from_xyz(((0, 0, 0), (1, 0, 0))
+                                 ).get_children(x_max=2, y_max=2, z_max=0),
+            set((
+                Orientation.from_xyz(((0, 0, 0), (1, 0, 0), (2, 0, 0))),
+                Orientation.from_xyz(((0, 0, 0), (1, 0, 0), (1, 1, 0))),
+                Orientation.from_xyz(((0, 0, 0), (1, 0, 0), (0, 1, 0)))
+            ))
         )
 
 

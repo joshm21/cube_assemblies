@@ -38,3 +38,13 @@ class Orientation:
 
     def add_cube(self, cube: Cube) -> 'Orientation':
         return Orientation((*self.cubes, cube))
+
+    def get_children(self, x_max: int, y_max: int, z_max: int) -> set('Orientation'):
+        """Creates new orientations by adding a new cube in each possible neighboring position"""
+        children = set()
+        for cube in self.cubes:
+            for new_cube in cube.get_neighbors(x_max, y_max, z_max):
+                if self.has_cube(new_cube):
+                    continue
+                children.add(self.add_cube(new_cube))
+        return children
