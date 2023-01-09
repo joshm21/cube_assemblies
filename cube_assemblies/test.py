@@ -69,12 +69,16 @@ class TestOrientation(unittest.TestCase):
             Orientation.from_xyz(((1, 2, 3), (4, 5, 6))))
         self.assertNotEqual(
             Orientation.from_xyz(((1, 2, 3), (4, 5, 6))),
-            Orientation.from_xyz(((9, 9, 9), (9, 9, 9))))
+            Orientation.from_xyz(((9, 9, 9), (8, 8, 8))))
 
     def test_init_sorting(self):
         self.assertEqual(
             Orientation.from_xyz(((1, 2, 3), (4, 5, 6))),
             Orientation.from_xyz(((4, 5, 6), (1, 2, 3))))
+
+    def test_init_duplicates(self):
+        with self.assertRaises(ValueError):
+            Orientation.from_xyz(((1, 2, 3), (1, 2, 3)))
 
     def test_from_xyz(self):
         self.assertEqual(
@@ -106,10 +110,18 @@ class TestOrientation(unittest.TestCase):
             Orientation.from_xyz(((0, 0, 0), (3, 3, 3))))
 
     def test_has_cube(self):
-        self.assertTrue(Orientation.from_xyz(((1, 2, 3), (4, 5, 6))
-                                             ).has_cube(Cube(1, 2, 3)))
-        self.assertFalse(Orientation.from_xyz(((1, 2, 3), (4, 5, 6))
-                                              ).has_cube(Cube(9, 9, 9)))
+        self.assertTrue(
+            Orientation.from_xyz(((1, 2, 3), (4, 5, 6))
+                                 ).has_cube(Cube(1, 2, 3)))
+        self.assertFalse(
+            Orientation.from_xyz(((1, 2, 3), (4, 5, 6))
+                                 ).has_cube(Cube(9, 9, 9)))
+
+    def test_add_cube(self):
+        self.assertEqual(
+            Orientation.from_xyz(((1, 2, 3), (4, 5, 6))),
+            Orientation.from_xyz(((1, 2, 3),)).add_cube(Cube(4, 5, 6))
+        )
 
 
 class TestPiece(unittest.TestCase):

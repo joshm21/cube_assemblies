@@ -42,7 +42,3 @@ class Piece:
                 rotated = last_orientation.rotate('z').translate_to_origin()
                 orientations.append(rotated)
         return frozenset(orientations)
-
-
-if __name__ == '__main__':
-    print(Piece.from_xyz(((0, 0, 0), (0, 0, 1))))

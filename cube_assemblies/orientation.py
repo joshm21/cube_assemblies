@@ -9,6 +9,7 @@ class Orientation:
     def __init__(self, cubes: tuple[Cube]) -> 'Orientation':
         object.__setattr__(self, 'cubes',
                            tuple((cube for cube in sorted(cubes))))
+        self.check_for_duplicates()
 
     @classmethod
     def from_xyz(cls, xyz_tuples: tuple[tuple]) -> 'Orientation':
@@ -16,6 +17,10 @@ class Orientation:
 
     def __str__(self) -> str:
         return f'({",".join((cube.__str__() for cube in self.cubes))})'
+
+    def check_for_duplicates(self) -> None:
+        if len(self.cubes) != len(set(self.cubes)):
+            raise ValueError('Orientation cannot contain duplicate cubes')
 
     def rotate(self, axis: str) -> 'Orientation':
         """Returns a new orientation rotated 90 degrees counterclockwise about axis in right hand coordinate system"""
@@ -30,3 +35,6 @@ class Orientation:
 
     def has_cube(self, cube: Cube) -> bool:
         return cube in self.cubes
+
+    def add_cube(self, cube: Cube) -> 'Orientation':
+        return Orientation((*self.cubes, cube))
