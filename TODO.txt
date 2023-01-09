@@ -1,6 +1,4 @@
 orientation.py
-- check for duplicates on init
-- add cube
 - get children
 - property: max x,y,z 
 - property is planar?
