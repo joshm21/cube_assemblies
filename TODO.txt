@@ -1,14 +1,5 @@
-orientation.py
-- get children
-- property: max x,y,z 
-- property is planar?
-
-generate_pieces.py
-- standardize return format
-- maybe tuple where each index represents pieces with x number of cubes
-
-polyomino/generate.py
-- add tests to compare with wiki table
+generate.py
+- how to efficiently generate burr?
 
 fit.py
 - define bounding box that pieces should fit in
