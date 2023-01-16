@@ -39,9 +39,9 @@ def plot(points):
 
     # missing V and X
 
-    x_max = 3
-    y_max = 3
-    z_max = 3
+    x_max = 6
+    y_max = 6
+    z_max = 6
     for point in points:
         if point[0] >= x_max:
             x_max = point[0] + 3
@@ -52,7 +52,6 @@ def plot(points):
 
     # format axes
     ax = plt.figure().add_subplot(projection="3d")
-    ax.set_box_aspect(aspect=(1, 1, 1))
     ax.set_xlabel('x')
     ax.set_xticks([x+0.5 for x in range(0, x_max)])
     ax.set_xticklabels([str(x) for x in range(0, x_max)])
@@ -62,6 +61,7 @@ def plot(points):
     ax.set_zlabel('z')
     ax.set_zticks([z+0.5 for z in range(0, z_max)])
     ax.set_zticklabels([str(z) for z in range(0, z_max)])
+    ax.set_box_aspect(aspect=(1, 1, 1))
 
     voxels = np.zeros((x_max, y_max, z_max))
     for point in points:

@@ -1,28 +1,21 @@
-from cube import Cube
-from orientation import Orientation
 from dataclasses import dataclass
+from orientation import Orientation
 
 
 @dataclass(frozen=True)
 class Piece:
-    normalized: Orientation
     orientations: frozenset[Orientation]
 
     def __init__(self, orientation: Orientation) -> 'Piece':
         object.__setattr__(self, 'orientations',
                            Piece.get_orientations_set(orientation))
-        object.__setattr__(self, 'normalized',
-                           self.get_normalized_orientation())
 
     @classmethod
-    def from_xyz(cls, xyz_tuples: tuple[tuple]) -> 'Piece':
-        return cls(Orientation.from_xyz(xyz_tuples))
+    def from_xyzs(cls, tuple_of_xyz_tuples: tuple[tuple[int, int, int]]) -> 'Piece':
+        return cls(Orientation.from_xyzs(tuple_of_xyz_tuples))
 
-    def __str__(self):
-        return f'{self.normalized.__str__()}'
-
-    def __eq__(self, other):
-        return self.orientations == other.orientations
+    def __str__(self) -> str:
+        return [ort.__str__() for ort in self.orientations].sort()[0]
 
     @staticmethod
     def get_orientations_set(orientation: Orientation) -> frozenset[Orientation]:
@@ -56,17 +49,3 @@ class Piece:
                     'z').get_translated_to_origin()
                 orientations.append(rotated)
         return frozenset(orientations)
-
-    def get_normalized_orientation(self) -> Orientation:
-        """Orientation with center of mass furthest in x direction, then y, then z
-        ie first orientation when center of masses sorted descending x, then y, then z"""
-        map_com_to_orientation = {
-            ort.center_of_mass: ort for ort in self.orientations}
-        coms = map_com_to_orientation.keys()
-        sorted_coms = sorted(coms, reverse=True)
-        normalized_orientation = map_com_to_orientation[sorted_coms[0]]
-        return normalized_orientation
-
-
-if __name__ == '__main__':
-    pass

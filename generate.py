@@ -1,104 +1,92 @@
+from itertools import combinations
 from piece import Piece
-from dataclasses import dataclass
-
-from orientation import Orientation
 
 
-@dataclass
-class Node:
-    xyzs: tuple[tuple[int]]
+def generate_pieces(
+    required_xyzs: tuple[tuple[int, int, int]],
+    allowed_xyzs: tuple[tuple[int, int, int]],
+    max_allowed_xyzs: int,
+) -> set[Piece]:
+    """Generate pieces by combining required_xyzs with all combinations of allowed_xyzs"""
+
+    def is_connected(xyzs: tuple[tuple[int, int, int]]) -> bool:
+        """Is every xyz (in)directly connected to every other xyz? (orthagonal not diagonal)
+        ie the set of xyzs is a connected, undirected graph"""
+
+        def map_xyz_to_neighbors(xyzs: tuple[tuple[int, int, int]]) -> dict:
+            map_dict = {}
+            for x, y, z in xyzs:
+                neighbors = []
+                if (x + 1, y, z) in xyzs:
+                    neighbors.append((x + 1, y, z))
+                if (x - 1, y, z) in xyzs:
+                    neighbors.append((x - 1, y, z))
+                if (x, y + 1, z) in xyzs:
+                    neighbors.append((x, y + 1, z))
+                if (x, y - 1, z) in xyzs:
+                    neighbors.append((x, y - 1, z))
+                if (x, y, z + 1) in xyzs:
+                    neighbors.append((x, y, z + 1))
+                if (x, y, z - 1) in xyzs:
+                    neighbors.append((x, y, z - 1))
+                map_dict[(x, y, z)] = tuple(neighbors)
+            return map_dict
+
+        def depth_first_search(
+            start_xyz: tuple[int, int, int], neighbors: dict, visited: set
+        ) -> None:
+            visited.add(start_xyz)
+            for neighbor in neighbors[start_xyz]:
+                if neighbor not in visited:
+                    depth_first_search(neighbor, neighbors, visited)
+
+        neighbors = map_xyz_to_neighbors(xyzs)
+        visited = set()
+        depth_first_search(xyzs[0], neighbors, visited)
+        if set(xyzs) == visited:
+            return True
+        return False
+
+    seen_pieces = set()
+
+    for number_of_allowed_xyzs in range(max_allowed_xyzs):
+        for combo in combinations(allowed_xyzs, number_of_allowed_xyzs + 1):
+            all_xyzs = (*required_xyzs, *combo)
+            if is_connected(all_xyzs):
+                seen_pieces.add(Piece.from_xyzs(all_xyzs))
+    return seen_pieces
 
 
-def generate_pieces(max_cubes: int, max_x: int, max_y=int, max_z=int) -> None:
-
-    # keep track of which orientations already seen to avoid reprocessing
-    seen_orientations = set()
-    # results stored in list of lists; index n corresponds to pieces with n+1 cubes
-    results = [[] for _ in range(max_cubes)]
-
-    # start at origin
-    initial_xyzs = ((0, 0, 0),)
-    queue = [initial_xyzs]
-    while len(queue) > 0:
-
-        xyzs = queue.pop(0)  # process next xyzs in queue
-        number_cubes = len(xyzs)
-
-        if number_cubes > max_cubes:
-            break  # finish when cubes > max because breadth first search
-
-        piece = Piece.from_xyz(xyzs)
-
-        if piece.normalized in seen_orientations:
-            continue  # already seen; skip
-
-        # print(piece)
-        seen_orientations.update(piece.orientations)  # add new piece to seen
-        results[number_cubes - 1].append(piece.normalized)  # store result
-
-        # generate children
-        # loop through cubes, add new cube at neighboring open spaces with x,y,z maxes
-        for xyz in xyzs:
-            x, y, z = xyz
-            neighbors = (
-                (x+1, y, z), (x, y+1, z), (x, y, z+1),
-                (x-1, y, z), (x, y-1, z), (x, y, z-1)
-            )
-            for neighbor in neighbors:
-                neighbor_x, neighbor_y, neighbor_z = neighbor
-                if neighbor in xyzs:
-                    continue  # space already taken by another cube
-                if neighbor_x > max_x or neighbor_x < -max_x:
-                    continue
-                if neighbor_y > max_y or neighbor_y < -max_y:
-                    continue
-                if neighbor_z > max_z or neighbor_z < -max_z:
-                    continue
-                new_xyz = (*xyzs, neighbor)
-                queue.append(new_xyz)
-
-    return results
-
-
-def print_results(results) -> None:
-    for level in range(len(results)):
-        print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-        print(f'{len(results[level])} pieces with {level + 1} cubes:')
-        # for orientation in results[level]:
-        #     print(f'{orientation}')
-
-
-def generate_polyomino():
+def generate_polyominos(max_number_of_cubes: int) -> None:
     # https://en.wikipedia.org/wiki/Polyomino#Enumeration_of_polyominoes
-    max_cubes = 8
-    results = generate_pieces(max_cubes, max_cubes-1, max_cubes-1, max_z=0)
-    print_results(results)
+
+    allowed_xyzs = []
+    for x in range(max_number_of_cubes):
+        for y in range(max_number_of_cubes - 1):
+            allowed_xyzs.append((x, y, 0))
+    pieces = generate_pieces((), tuple(allowed_xyzs), max_number_of_cubes)
+    return pieces
 
 
-def generate_polycube():
+def generate_polycubes(max_number_of_cubes: int) -> None:
     # https://en.wikipedia.org/wiki/Polycube#Enumerating_polycubes
-    max_cubes = 6
-    results = generate_pieces(max_cubes, max_cubes-1, max_cubes-1, max_cubes-1)
-    print_results(results)
+    allowed_xyzs = []
+    for x in range(max_number_of_cubes):
+        for y in range(max_number_of_cubes - 1):
+            for z in range(max_number_of_cubes - 1):
+                allowed_xyzs.append((x, y, z))
+    pieces = generate_pieces((), tuple(allowed_xyzs), max_number_of_cubes)
+    return pieces
 
 
-def generate_burr():
-    results = generate_pieces(max_cubes=6*2*2, max_x=5, max_y=1, max_z=1)
-    print_results(results)
+def generate_six_piece_burr() -> None:
+    pass
 
 
-def generate_burr_alternate():
-    # https://billcutlerpuzzles.com/docs/CA6PB/pieces.html
-    # 12 cubes can be included or not, 2 ^ 12 = 4096
-    # get all combinations, but check if connected
-    # then use Pieces to group like orientations
-    # connected_orientations = []
-    # for twelve_cube_combo in range(4096):
-    #     if twelve_cube_combo in connected_configs
-    #         append
+def main():
+    print(len(generate_polyominos(5)))
+    # about 5 seconds
 
 
-if __name__ == '__main__':
-    # generate_polyomino()
-    # generate_polycube()
-    generate_burr()
+if __name__ == "__main__":
+    main()

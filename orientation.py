@@ -7,7 +7,7 @@ from dataclasses import dataclass
 class Orientation:
     cubes: frozenset[Cube]
 
-    def __init__(self, cubes: tuple[Cube]) -> 'Orientation':
+    def __init__(self, cubes: tuple[Cube]) -> None:
         object.__setattr__(self, 'cubes', frozenset(cubes))
         self.check_for_duplicates(cubes)
 
@@ -15,29 +15,17 @@ class Orientation:
         if len(cubes) != len(self.cubes):
             raise ValueError('Orientation cannot contain duplicate cubes')
 
-    @ classmethod
-    def from_xyz(cls, xyz_tuples: tuple[tuple]) -> 'Orientation':
-        return cls(tuple((Cube(*xyz) for xyz in xyz_tuples)))
+    @classmethod
+    def from_xyzs(cls, tuple_of_xyz_tuples: tuple[tuple[int, int, int]]) -> 'Orientation':
+        return cls(tuple(Cube(*xyz) for xyz in tuple_of_xyz_tuples))
 
-    @ property
-    def center_of_mass(self) -> tuple[int]:
-        x_total = 0
-        y_total = 0
-        z_total = 0
-        for cube in self.cubes:
-            x_total += cube.x
-            y_total += cube.y
-            z_total += cube.z
-        number_cubes = len(self.cubes)
-        return (x_total / number_cubes, y_total / number_cubes, z_total / number_cubes)
+    def to_xyzs(self) -> set[tuple[int, int, int]]:
+        return set((cube.x, cube.y, cube.z) for cube in self.cubes)
 
     def __str__(self) -> str:
-        return f'({",".join((cube.__str__() for cube in self.get_sorted_cubes()))})'
+        return f"({','.join((cube.__str__() for cube in self.get_sorted_cubes()))})"
 
-    def __eq__(self, other) -> bool:
-        return set(self.cubes) == set(other.cubes)
-
-    def get_sorted_cubes(self) -> tuple[Cube]:
+    def get_sorted_cubes(self) -> list[Cube]:
         """Sort ascending by z, then y, then x"""
         return sorted(self.cubes, key=lambda cube: (cube.z, cube.y, cube.x))
 
@@ -57,7 +45,3 @@ class Orientation:
         for cube in self.cubes:
             points.append((cube.x, cube.y, cube.z))
         plot.plot(points)
-
-
-if __name__ == '__main__':
-    Orientation.from_xyz(((0, 0, 0), (0, 0, 1))).plot()
