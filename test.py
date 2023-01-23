@@ -173,15 +173,8 @@ class TestGenerate(unittest.TestCase):
     def test_generate_polyomino(self):
         self.assertEqual(len(generate_polyominos(5)), 21)
 
-
-# def test_generate_polycube(self):
-#     results = generate_pieces(max_cubes=6, max_x=5, max_y=5, max_z=5)
-#     self.assertEqual(1, len(results[0]))
-#     self.assertEqual(1, len(results[1]))
-#     self.assertEqual(2, len(results[2]))
-#     self.assertEqual(8, len(results[3]))
-#     self.assertEqual(29, len(results[4]))
-#     self.assertEqual(166, len(results[5]))
+    def test_generate_polycube(self):
+        self.assertEqual(len(generate_polycubes(4)), 12)
 
 
 if __name__ == "__main__":

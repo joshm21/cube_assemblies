@@ -2,6 +2,20 @@ from itertools import combinations
 from piece import Piece
 
 
+def generate_by_adding_cubes():
+    # can't just go from last added cube, or some will be missed
+    # need to go from all cubes to all legal neighbors
+
+    # pass a dict mapping xyz to neighbors to get children
+    # don't need get children function, just dict
+    pass
+
+
+def generate_by_combinations():
+    # like burr
+    pass
+
+
 def generate_pieces(
     required_xyzs: tuple[tuple[int, int, int]],
     allowed_xyzs: tuple[tuple[int, int, int]],
@@ -59,7 +73,6 @@ def generate_pieces(
 
 def generate_polyominos(max_number_of_cubes: int) -> None:
     # https://en.wikipedia.org/wiki/Polyomino#Enumeration_of_polyominoes
-
     allowed_xyzs = []
     for x in range(max_number_of_cubes):
         for y in range(max_number_of_cubes - 1):
@@ -73,7 +86,7 @@ def generate_polycubes(max_number_of_cubes: int) -> None:
     allowed_xyzs = []
     for x in range(max_number_of_cubes):
         for y in range(max_number_of_cubes - 1):
-            for z in range(max_number_of_cubes - 1):
+            for z in range(max_number_of_cubes - 2):
                 allowed_xyzs.append((x, y, z))
     pieces = generate_pieces((), tuple(allowed_xyzs), max_number_of_cubes)
     return pieces
@@ -84,7 +97,7 @@ def generate_six_piece_burr() -> None:
 
 
 def main():
-    print(len(generate_polyominos(5)))
+    print(len(generate_polycubes(4)))
     # about 5 seconds
 
 
