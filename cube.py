@@ -1,25 +1,40 @@
-from dataclasses import dataclass
+from functools import cache
+
+Cube = tuple[int, int, int]
 
 
-@dataclass(frozen=True, order=True)
-class Cube:
-    x: int
-    y: int
-    z: int
+@cache
+def translated(cube: Cube, offset_x: int, offset_y: int, offset_z: int) -> Cube:
+    x, y, z = cube
+    return (x + offset_x, y + offset_y, z + offset_z)
 
-    def __str__(self):
-        return f'({self.x},{self.y},{self.z})'
 
-    def get_rotated(self, axis: str) -> 'Cube':
-        """Returns a new cube rotated 90 degrees counterclockwise about axis in right hand coordinate system"""
-        if axis == 'x':
-            return Cube(self.x, -1 * self.z, self.y)
-        if axis == 'y':
-            return Cube(self.z, self.y, -1 * self.x)
-        if axis == 'z':
-            return Cube(-1 * self.y, self.x, self.z)
-        raise ValueError(f'Rotation axis must be x, y, or z, not {axis}')
+@cache
+def rotated_x(cube: Cube) -> Cube:
+    x, y, z = cube
+    return (x, -z, y)
 
-    def get_translated(self, x: int, y: int, z: int) -> 'Cube':
-        """Returns a new cube translated by x,y,z amounts"""
-        return Cube(self.x + x, self.y + y, self.z + z)
+
+@cache
+def rotated_y(cube: Cube) -> Cube:
+    x, y, z = cube
+    return (z, y, -x)
+
+
+@cache
+def rotated_z(cube: Cube) -> Cube:
+    x, y, z = cube
+    return (-y, x, z)
+
+
+@cache
+def neighbors(cube: Cube) -> frozenset[Cube, Cube, Cube, Cube, Cube, Cube]:
+    x, y, z = cube
+    result = []
+    result.append((x + 1, y, z))
+    result.append((x - 1, y, z))
+    result.append((x, y + 1, z))
+    result.append((x, y - 1, z))
+    result.append((x, y, z + 1))
+    result.append((x, y, z - 1))
+    return frozenset(result)

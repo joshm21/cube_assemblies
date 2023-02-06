@@ -1,47 +1,70 @@
-from cube import Cube
-import plot as plot
-from dataclasses import dataclass
+import cube as Cube
+
+Orientation = frozenset[Cube.Cube]
 
 
-@dataclass(frozen=True)
-class Orientation:
-    cubes: frozenset[Cube]
+def translated(
+    orientation: Orientation, offset_x: int, offset_y: int, offset_z: int
+) -> Orientation:
+    return frozenset(
+        Cube.translated(cube, offset_x, offset_y, offset_z) for cube in orientation
+    )
 
-    def __init__(self, cubes: tuple[Cube]) -> None:
-        object.__setattr__(self, 'cubes', frozenset(cubes))
-        self.check_for_duplicates(cubes)
 
-    def check_for_duplicates(self, cubes) -> None:
-        if len(cubes) != len(self.cubes):
-            raise ValueError('Orientation cannot contain duplicate cubes')
+def translated_to_origin(orientation: Orientation) -> Orientation:
+    min_x = min((cube[0] for cube in orientation))
+    min_y = min((cube[1] for cube in orientation))
+    min_z = min((cube[2] for cube in orientation))
+    return translated(orientation, -min_x, -min_y, -min_z)
 
-    @classmethod
-    def from_xyzs(cls, tuple_of_xyz_tuples: tuple[tuple[int, int, int]]) -> 'Orientation':
-        return cls(tuple(Cube(*xyz) for xyz in tuple_of_xyz_tuples))
 
-    def to_xyzs(self) -> set[tuple[int, int, int]]:
-        return set((cube.x, cube.y, cube.z) for cube in self.cubes)
+def rotated_x(orientation: Orientation) -> Orientation:
+    return frozenset(Cube.rotated_x(cube) for cube in orientation)
 
-    def __str__(self) -> str:
-        return f"({','.join((cube.__str__() for cube in self.get_sorted_cubes()))})"
 
-    def get_sorted_cubes(self) -> list[Cube]:
-        """Sort ascending by z, then y, then x"""
-        return sorted(self.cubes, key=lambda cube: (cube.z, cube.y, cube.x))
+def rotated_y(orientation: Orientation) -> Orientation:
+    return frozenset(Cube.rotated_y(cube) for cube in orientation)
 
-    def get_rotated(self, axis: str) -> 'Orientation':
-        """Returns a new orientation rotated 90 degrees counterclockwise about axis in right hand coordinate system"""
-        return Orientation(tuple(cube.get_rotated(axis) for cube in self.cubes))
 
-    def get_translated_to_origin(self) -> 'Orientation':
-        """Returns a new orientation translated as close to origin as possible with x,y,z >= 0"""
-        x_min = min((cube.x for cube in self.cubes))
-        y_min = min((cube.y for cube in self.cubes))
-        z_min = min((cube.z for cube in self.cubes))
-        return Orientation(tuple(cube.get_translated(-1 * x_min, -1 * y_min, -1 * z_min) for cube in self.cubes))
+def rotated_z(orientation: Orientation) -> Orientation:
+    return frozenset(Cube.rotated_z(cube) for cube in orientation)
 
-    def plot(self) -> None:
-        points = []
-        for cube in self.cubes:
-            points.append((cube.x, cube.y, cube.z))
-        plot.plot(points)
+
+def neighbors(orientation: Orientation) -> frozenset[Cube.Cube]:
+    return frozenset().union(*[Cube.neighbors(cube) for cube in orientation])
+
+
+def is_connected(orientation: Orientation) -> bool:
+    """Is every cube connected to every other cube? (orthagonal not diagonal)
+    ie the set of cubes is a connected, undirected graph"""
+
+    def map_cube_to_other_cubes(orientation: Orientation) -> dict:
+        results = {}
+        for cube in orientation:
+            all_cube_neighbors = Cube.neighbors(cube)
+            only_neighbors_in_polycube = all_cube_neighbors.intersection(orientation)
+            results[cube] = only_neighbors_in_polycube
+        return results
+
+    def depth_first_search(start: Cube, neighbors: dict, visited: set) -> None:
+        visited.add(start)
+        for neighbor in neighbors[start]:
+            if neighbor not in visited:
+                depth_first_search(neighbor, neighbors, visited)
+
+    neighbors = map_cube_to_other_cubes(orientation)
+    visited = set()
+    depth_first_search(orientation[0], neighbors, visited)
+    if set(orientation) == visited:
+        return True
+    return False
+
+
+def is_millable(orientation: Orientation) -> bool:
+    # no internal corners, where the sides of three cubes meet inside the piece in a concave fashion
+    pass
+
+
+def is_notchable(orientation: Orientation) -> bool:
+    # no concave crosscuts perpendicular to the axis
+    pass

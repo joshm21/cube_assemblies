@@ -1,40 +1,10 @@
-from orientation import Orientation
-from piece import Piece
+def save_orientations(filename: str, orientations: list) -> None:
+    with open(filename, "w") as f:
+        for ort in sorted(orientations):
+            f.write(str(sorted(ort)))
+            f.write("\n")
 
 
-def save_pieces(pieces: list[Piece], filename: str) -> None:
-    __save_list_of_stringables(pieces, filename)
-
-
-def save_orientations(orientations: list[Orientation], filename: str) -> None:
-    __save_list_of_stringables(orientations, filename)
-
-
-def __save_list_of_stringables(stringables: list, filename: str) -> None:
-    with open(filename, 'w') as f:
-        for stringable in stringables:
-            f.write(stringable.__str__())
-            f.write('\n')
-
-
-def load_pieces(filename: str) -> list[Piece]:
-    pieces = []
-    for xyzs in __load_xyzs(filename):
-        pieces.append(Piece.from_xyzs(xyzs))
-    return pieces
-
-
-def load_orientations(filename: str) -> list[Orientation]:
-    orientations = []
-    for xyzs in __load_xyzs(filename):
-        orientations.append(Orientation.from_xyzs(xyzs))
-    return orientations
-
-
-def __load_xyzs(filename: str) -> list[tuple[int]]:
-    xyzs = []
-    with open(filename) as f:
-        lines = f.readlines()
-        for line in lines:
-            xyzs.append(eval(line))
-    return xyzs
+def save_pieces(filename: str, pieces: list) -> None:
+    orientations = [sorted(piece)[0] for piece in sorted(pieces)]
+    save_orientations(filename, orientations)
