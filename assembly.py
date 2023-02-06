@@ -1,6 +1,11 @@
-# store orientation and offset from global coordinate origin
+from . import orientation as Orientation
 
-# has intersection
+Assembly = list[Orientation.Orientation]
+
+
+def has_intersection(assembly: Assembly):
+    pass
+
 
 # fit.py
 # - define bounding box that pieces should fit in

@@ -1,5 +1,4 @@
-import orientation as Orientation
-import plot as Plot
+from . import orientation as Orientation
 
 Piece = frozenset[Orientation.Orientation]
 
@@ -29,6 +28,4 @@ def from_orientation(orientation: Orientation.Orientation) -> Piece:
             previous_orientation = all_orientations[-1]
             rotated_z = Orientation.rotated_z(previous_orientation)
             all_orientations.append(Orientation.translated_to_origin(rotated_z))
-    # for ort in all_orientations:
-    #     Plot.plot(ort)
     return frozenset(all_orientations)

@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 
 def plot(points):
 
-    x_max = 4
-    y_max = 4
-    z_max = 4
+    x_max = 6
+    y_max = 6
+    z_max = 6
     for point in points:
         if point[0] >= x_max:
             x_max = point[0] + 3
