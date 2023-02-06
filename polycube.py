@@ -1,5 +1,5 @@
-from . import orientation as Orientation
-from .generate import generate_by_adding_cubes, to_unique_pieces
+import orientation as Orientation
+from generate import generate_by_adding_cubes, to_unique_pieces
 
 
 def pentacubes():
@@ -35,8 +35,6 @@ def pentacubes():
         frozenset(((0, 0, 2), (1, 0, 0), (1, 0, 1), (1, 0, 2), (1, 0, 3))),
         frozenset(((0, 0, 2), (1, 0, 2), (1, 0, 1), (1, 0, 0), (2, 0, 0))),
     )
-    for ort in pentacubes:
-        Plot.plot(ort)
 
 
 def generate_polycube_orientations(max_cubes: int) -> list[Orientation.Orientation]:
@@ -59,7 +57,7 @@ def test(max_cubes: int):
     print(f"Generating correct counts? {expected_polycubes == len(polycube_pieces)}")
 
 
-def main():
+def main() -> None:
     test(5)
 
 

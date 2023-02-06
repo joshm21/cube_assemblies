@@ -1,6 +1,6 @@
-from . import orientation as Orientation
-from .generate import generate_by_combos, to_unique_pieces
-from . import cutler as Cutler
+import orientation as Orientation
+from generate import generate_by_combos, to_unique_pieces
+import cutler as Cutler
 
 
 def generate_six_piece_burr_orientations() -> list[Orientation.Orientation]:

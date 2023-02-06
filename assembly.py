@@ -1,4 +1,4 @@
-from . import orientation as Orientation
+import orientation as Orientation
 
 Assembly = list[Orientation.Orientation]
 

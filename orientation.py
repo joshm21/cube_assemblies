@@ -1,4 +1,4 @@
-from . import cube as Cube
+import cube as Cube
 
 
 Orientation = frozenset[Cube.Cube]

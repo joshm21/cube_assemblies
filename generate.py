@@ -62,26 +62,6 @@ def to_unique_pieces(
     return {Piece.from_orientation(ort) for ort in orientations}
 
 
-def test_generators(polyomino_level: int, polycube_level: int) -> None:
-
-    print("Testing Polyominoes...")
-    # https://en.wikipedia.org/wiki/Polyomino#Enumeration_of_polyominoes
-    fixed_polyominoes = (1, 2, 6, 19, 63, 216, 760, 2725, 9910, 36446, 135268, 505861)
-    free_polyominoes = (1, 1, 2, 5, 12, 35, 108, 369, 1285, 4655, 17073, 63600)
-    expected_fixed_polyominoes = sum(fixed_polyominoes[:polyomino_level])
-    expected_free_polyominoes = sum(free_polyominoes[:polyomino_level])
-    fixed_polyominoes = generate_polyomino_orientations(polyomino_level)
-    free_polyominoes = to_unique_pieces(fixed_polyominoes)
-    if expected_fixed_polyominoes != len(fixed_polyominoes):
-        print(
-            f" - expected {expected_fixed_polyominoes} fixed polyonomines, not {len(fixed_polyominoes)}"
-        )
-    if expected_free_polyominoes != len(free_polyominoes):
-        print(
-            f" - expected {expected_free_polyominoes} free polyonomines, not {len(free_polyominoes)}"
-        )
-
-
 def main():
     # save_generated_pieces(10, 6)
     save_generated_pieces(10, 6)
