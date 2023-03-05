@@ -36,7 +36,8 @@ def generate_six_piece_burr_orientations() -> list[Orientation.Orientation]:
     return generate_by_combos(required, allowed)
 
 
-def prep_for_assemblies():
+def construct_assemblies():
+    # rotate and translate orientations for assembly
     pass
 
 

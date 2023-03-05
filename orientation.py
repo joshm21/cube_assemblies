@@ -42,6 +42,30 @@ def translated_to_origin(orientation: Orientation) -> Orientation:
     )
 
 
+def is_within_bounds(
+    orientation: Orientation,
+    x_max: int,
+    x_min: int,
+    y_max: int,
+    y_min: int,
+    z_max: int,
+    z_min: int,
+) -> bool:
+    if max_x(orientation) > x_max:
+        return False
+    if min_x(orientation) < x_min:
+        return False
+    if max_y(orientation) > y_max:
+        return False
+    if min_y(orientation) < y_min:
+        return False
+    if max_z(orientation) > z_max:
+        return False
+    if min_z(orientation) < z_min:
+        return False
+    return True
+
+
 def rotated_x(orientation: Orientation) -> Orientation:
     return frozenset(Cube.rotated_x(cube) for cube in orientation)
 

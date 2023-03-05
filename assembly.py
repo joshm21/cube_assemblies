@@ -3,7 +3,11 @@ import orientation as Orientation
 Assembly = list[Orientation.Orientation]
 
 
-def has_intersection(assembly: Assembly):
+def has_intersection(assembly: Assembly) -> bool:
+    pass
+
+
+def rotated_x():
     pass
 
 

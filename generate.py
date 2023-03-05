@@ -60,12 +60,3 @@ def to_unique_pieces(
     orientations: list[Orientation.Orientation],
 ) -> set[Piece.Piece]:
     return {Piece.from_orientation(ort) for ort in orientations}
-
-
-def main():
-    # save_generated_pieces(10, 6)
-    save_generated_pieces(10, 6)
-
-
-if __name__ == "__main__":
-    main()
